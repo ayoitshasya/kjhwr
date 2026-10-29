@@ -6,7 +6,7 @@ hold against forecast error, and how good the forecast actually is. Built on Ele
 public Insights API (FUELHH half-hourly wind outturn, WINDFOR wind forecast) — no API
 key required.
 
-**Live demo:** _(placeholder — add the deployed frontend/backend URLs here)_
+**Live demo:** https://kjhwr-dun.vercel.app (backend: https://kjhwr-api-n7je.onrender.com)
 
 > The backend runs on Render's free tier, which spins the container down after 15
 > minutes of inactivity. **The first request after a period of idle can take
