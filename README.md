@@ -8,6 +8,12 @@ key required.
 
 **Live demo:** _(placeholder — add the deployed frontend/backend URLs here)_
 
+> The backend runs on Render's free tier, which spins the container down after 15
+> minutes of inactivity. **The first request after a period of idle can take
+> 30-60 seconds** while it spins back up — if the live demo looks unresponsive on a
+> cold open, that's expected, not a broken deployment. Reloading after that first
+> request will be fast.
+
 ## Directory map
 
 ```
@@ -191,14 +197,32 @@ endpoint's `data_coverage_note` field.
 
 ## Deployment
 
-**Frontend (Vercel)**: import the repo, set the project root to `frontend/`, build
-command `npm run build`, output directory `dist`. Add env var
-`VITE_API_BASE_URL=<your Render backend URL>`.
+Deploy the backend first — the frontend needs its URL.
 
-**Backend (Render)**: new Web Service, root directory `backend/`, environment
-"Docker" (uses `backend/Dockerfile`). Add env var `CORS_ORIGINS` including your Vercel
-domain (e.g. `https://your-app.vercel.app`), comma-separated if there's more than one
-origin.
+**Backend (Render)**: new Web Service → "Build and deploy from a Git repository" →
+this repo. Root directory `backend/`. Runtime "Docker" (uses `backend/Dockerfile` as
+is, no changes needed). Instance type "Free" is enough — it's a read-only API over a
+committed CSV snapshot. Env vars:
+
+| Key | Value |
+|---|---|
+| `CORS_ORIGINS` | Start with `http://localhost:5173,http://localhost:8080`; **come back and add the Vercel URL once step 2 gives you one** (comma-separated if keeping both) |
+| `DEFAULT_CONFIDENCE` | `0.9` (optional — this is already the default) |
+
+Render's free tier spins the container down after 15 minutes idle; the first request
+after that takes 30-60 seconds to wake it up. Noted in the banner at the top of this
+file so a reviewer isn't alarmed by it.
+
+**Frontend (Vercel)**: Import Project → this repo → set **Root Directory** to
+`frontend`. Framework preset "Vite" (should auto-detect); build command `npm run
+build`, output directory `dist` (defaults, shouldn't need changing). Env var:
+
+| Key | Value |
+|---|---|
+| `VITE_API_BASE_URL` | The Render URL from the previous step, e.g. `https://kjhwr-backend.onrender.com` |
+
+Then go back to Render and update `CORS_ORIGINS` to include the Vercel URL Vercel just
+gave you, and redeploy the backend for that env var change to take effect.
 
 ## AI tooling disclosure
 
