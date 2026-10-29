@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  --color-bg: #f4f5f7;
+  --color-panel: #ffffff;
+  --color-border: #d7dbe0;
+  --color-text: #12161c;
+  --color-text-muted: #5b6472;
+  --color-accent-forecast: #0f766e;
+  --color-accent-actual: #b45309;
+  --color-accent-negative: #b91c1c;
+  --color-band: rgba(15, 118, 110, 0.12);
+}
+
+.dark {
+  --color-bg: #0a0d12;
+  --color-panel: #11151c;
+  --color-border: #232a34;
+  --color-text: #e6e9ed;
+  --color-text-muted: #8a94a3;
+  --color-accent-forecast: #4fd1c5;
+  --color-accent-actual: #f0a830;
+  --color-accent-negative: #f87171;
+  --color-band: rgba(79, 209, 197, 0.14);
+}
+
+html,
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-mono-tabular {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
