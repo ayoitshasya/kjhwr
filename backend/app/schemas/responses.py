@@ -98,6 +98,12 @@ class AccuracyResponse(BaseModel):
     safe_volume_quantile_mw: float = Field(
         description="quantile(error_mw, 1 - confidence) used to derive safe volume"
     )
+    data_coverage_note: str = Field(
+        description=(
+            "Explains why bias is persistently negative: FUELHH WIND and WINDFOR cover "
+            "different populations of wind farms, not a forecasting defect. See README."
+        )
+    )
     overall: MetricsBlock
     by_settlement_period: list[SlicedMetricsBlock]
     by_day: list[SlicedMetricsBlock]

@@ -35,6 +35,8 @@ export function AccuracyView() {
         <DateField label="To" value={to} onChange={setTo} />
       </div>
 
+      <CoverageNotice />
+
       <QueryState query={comparisonQuery} isEmpty={(d) => d.periods.length === 0}>
         {(data) => (
           <>
@@ -103,15 +105,32 @@ export function AccuracyView() {
           <strong>MAE</strong> (mean absolute error) and <strong>RMSE</strong> (root mean
           squared error) summarise typical forecast error size in MW - RMSE weights large
           misses more heavily. <strong>Bias</strong> is the average error (actual minus
-          forecast): negative means the desk's forecast tends to run high. P10/P50/P90
-          are the 10th/50th/90th percentile of the error distribution - the same
-          quantiles used to build the Decision view's confidence band and safe volume.
+          forecast). P10/P50/P90 are the 10th/50th/90th percentile of the error
+          distribution - the same quantiles used to build the Decision view's confidence
+          band and safe volume.
         </p>
         <p>
           Slicing by time of day and forecast horizon shows whether error is worse at
           particular settlement periods or further-ahead forecasts; slicing by
           actual-generation decile shows whether the forecast is systematically worse in
           very low or very high wind conditions.
+        </p>
+        <p>
+          <strong>Why bias is negative in every slice:</strong> FUELHH&apos;s WIND actuals
+          only cover Balancing-Mechanism-metered (transmission-connected) wind farms,
+          while WINDFOR approximates total GB wind. This is now confirmed
+          quantitatively: for January 2026, FUELHH actual (8,616 GWh) plus NESO&apos;s own
+          independent &quot;Estimated Embedded Wind Generation&quot; series (1,921 GWh)
+          sums to 10,537 GWh - within 0.6% of the independently reported 10,600 GWh GB
+          wind total for the month - while FUELHH alone is only 81.3% of it. The
+          coverage gap is the dominant driver of the bias, not the whole story: the
+          -1,840 MW bias is smaller than NESO&apos;s 2,582 MW mean embedded-wind estimate,
+          so roughly 700-900 MW looks like ordinary forecast error on top of the
+          coverage gap. A join/timezone bug was ruled out separately (shifting the
+          forecast ±2 hours doesn&apos;t reduce error). Full investigation and numbers in
+          the README. The safe-volume figure is unaffected - it&apos;s an empirical
+          quantile of this same error distribution, not something that assumes the
+          error averages to zero.
         </p>
       </HowToReadPanel>
     </div>
@@ -139,6 +158,19 @@ function DateField({
         className="rounded border border-(--color-border) bg-(--color-panel) px-2 py-1.5 font-mono-tabular text-sm text-(--color-text)"
       />
     </label>
+  )
+}
+
+function CoverageNotice() {
+  return (
+    <div className="rounded border border-(--color-accent-actual)/40 bg-(--color-accent-actual)/10 px-4 py-3 text-sm text-(--color-text)">
+      <span className="font-semibold text-(--color-accent-actual)">Known data caveat:</span>{' '}
+      bias is negative across every slice below because FUELHH actuals only cover
+      Balancing-Mechanism-metered wind farms, while WINDFOR approximates total GB wind -
+      confirmed quantitatively against NESO&apos;s own embedded-wind data (see below),
+      and the dominant but not sole driver of the bias. See &quot;how to read this&quot;
+      below and the README for the full investigation.
+    </div>
   )
 }
 

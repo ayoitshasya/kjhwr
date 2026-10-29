@@ -85,6 +85,7 @@ export interface AccuracyResponse {
   date_to: string
   confidence: number
   safe_volume_quantile_mw: number
+  data_coverage_note: string
   overall: MetricsBlock
   by_settlement_period: SlicedMetricsBlock[]
   by_day: SlicedMetricsBlock[]

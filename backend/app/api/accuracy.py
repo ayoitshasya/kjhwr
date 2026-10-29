@@ -5,6 +5,7 @@ from fastapi import APIRouter, HTTPException, Query
 from app.config import settings
 from app.schemas.responses import AccuracyResponse, MetricsBlock, QuantileSet, SlicedMetricsBlock
 from app.services.accuracy_service import (
+    DATA_COVERAGE_NOTE,
     actual_generation_decile,
     bucket_horizon,
     sliced_metrics,
@@ -61,6 +62,7 @@ def get_accuracy(
         date_to=to.isoformat(),
         confidence=confidence,
         safe_volume_quantile_mw=float(safe_volume_quantile_mw),
+        data_coverage_note=DATA_COVERAGE_NOTE,
         overall=_to_metrics_block(overall),
         by_settlement_period=[
             _to_sliced_block(m) for m in sliced_metrics(df, by="settlementPeriod")

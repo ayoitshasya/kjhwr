@@ -98,6 +98,13 @@ export function DecisionView() {
                 <strong>risk buffer</strong> (forecast − safe volume) is how much extra
                 thermal generation the desk should be ready to buy to cover the downside.
               </p>
+              <p>
+                Note: FUELHH actuals (used to derive the error margin above) only cover
+                Balancing-Mechanism-metered wind farms, not all of GB wind - confirmed
+                against NESO&apos;s own embedded-wind data. See the Accuracy view&apos;s
+                &quot;how to read this&quot; panel and the README for what that means and
+                why the safe-volume figure is still reliable despite it.
+              </p>
             </HowToReadPanel>
           </>
         )}

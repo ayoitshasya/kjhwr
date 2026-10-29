@@ -102,6 +102,9 @@ class TestAccuracyEndpoint:
         assert len(body["by_day"]) == 31
         assert len(body["by_actual_decile"]) == 10
         assert body["by_horizon_bucket"]
+        # Bias is dominated by a known FUELHH-vs-WINDFOR coverage gap (see README) -
+        # the response must always carry that explanation, not just the raw numbers.
+        assert "coverage" in body["data_coverage_note"].lower()
 
     def test_default_confidence_matches_settings(self):
         response = client.get(
