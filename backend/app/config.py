@@ -9,8 +9,8 @@ DATA_DIR = BACKEND_ROOT / "app" / "data"
 
 ELEXON_BASE_URL = "https://data.elexon.co.uk/bmrs/api/v1"
 
-FUELHH_CACHE_FILE = DATA_DIR / "fuelhh_wind.parquet"
-WINDFOR_CACHE_FILE = DATA_DIR / "windfor.parquet"
+FUELHH_CACHE_FILE = DATA_DIR / "fuelhh_wind.csv"
+WINDFOR_CACHE_FILE = DATA_DIR / "windfor.csv"
 
 
 class Settings(BaseSettings):

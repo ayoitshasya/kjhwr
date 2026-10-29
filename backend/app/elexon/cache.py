@@ -1,9 +1,13 @@
-"""Local parquet cache for Elexon data.
+"""Local CSV cache for Elexon data.
 
 The service layer always reads through this module and never calls Elexon directly.
-This keeps the running app offline-first: the committed parquet snapshots mean the
-demo works with no network access and never fails live. `scripts/refresh_data.py` is
-the only thing that writes these files.
+This keeps the running app offline-first: the committed snapshots mean the demo works
+with no network access and never fails live. `scripts/refresh_data.py` is the only
+thing that writes these files.
+
+CSV rather than parquet deliberately: parquet needs pyarrow, whose wheel is tens of MB
+and made the backend Docker build fragile on a slow connection, for a dataset small
+enough (a few MB) that the format makes no practical difference here.
 """
 
 from __future__ import annotations
@@ -29,7 +33,11 @@ def load_fuelhh() -> pd.DataFrame:
         raise FileNotFoundError(
             f"No cached FUELHH data at {FUELHH_CACHE_FILE}. Run scripts/refresh_data.py."
         )
-    return pd.read_parquet(FUELHH_CACHE_FILE)
+    return pd.read_csv(
+        FUELHH_CACHE_FILE,
+        dtype={"settlementDate": str, "settlementPeriod": int, "generation": float},
+        parse_dates=["publishTime", "startTime"],
+    )
 
 
 def load_windfor() -> pd.DataFrame:
@@ -37,7 +45,11 @@ def load_windfor() -> pd.DataFrame:
         raise FileNotFoundError(
             f"No cached WINDFOR data at {WINDFOR_CACHE_FILE}. Run scripts/refresh_data.py."
         )
-    return pd.read_parquet(WINDFOR_CACHE_FILE)
+    return pd.read_csv(
+        WINDFOR_CACHE_FILE,
+        dtype={"generation": float},
+        parse_dates=["publishTime", "startTime"],
+    )
 
 
 async def refresh_fuelhh(
@@ -48,7 +60,7 @@ async def refresh_fuelhh(
     df = pd.DataFrame([row.model_dump() for row in rows])[fuelhh_columns()]
     df = df.sort_values(["startTime"]).drop_duplicates(subset=["startTime"], keep="last")
     FUELHH_CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
-    df.to_parquet(FUELHH_CACHE_FILE, index=False)
+    df.to_csv(FUELHH_CACHE_FILE, index=False)
     return df
 
 
@@ -62,5 +74,5 @@ async def refresh_windfor(
         subset=["publishTime", "startTime"], keep="last"
     )
     WINDFOR_CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
-    df.to_parquet(WINDFOR_CACHE_FILE, index=False)
+    df.to_csv(WINDFOR_CACHE_FILE, index=False)
     return df
